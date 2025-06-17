@@ -104,3 +104,8 @@ outputs/
 # Additional ignored files
 _gitignore
 tests/run_tests.py
+.env
+.env.*
+.venv
+.venv/*
+.vscode/

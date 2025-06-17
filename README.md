@@ -88,3 +88,26 @@ ai-broken-link-detector/
         |
 [Report Results]
 ```
+
+| Node Name                | Agentic Step                | Description                                                      |
+|--------------------------|-----------------------------|------------------------------------------------------------------|
+| interpret_user_intent    | Interpret User Intent       | Understands user input and configures scan parameters            |
+| crawl_and_extract        | Select Relevant Logs        | Crawls site, extracts all links                                  |
+| identify_failure_pattern | Identify Failure Pattern    | Checks links, finds broken ones, detects failure patterns        |
+| correlate_events         | Correlate Events            | Groups failures by type/time/metadata for deeper analysis        |
+| generate_insights        | Generate Insights, Detect Anomalies, Hypothesize Root Cause | Produces insights, anomaly detection, root cause hypotheses |
+| report_results           | Report Output               | Generates and saves reports in multiple formats                  |
+
+🧪 Testing
+
+Run tests with:
+
+python3 run_tests.py
+
+🤝 Contribution
+Feel free to open issues or pull requests to improve this tool.
+
+📧 Contact
+For questions or feedback, contact: kevincolacogofynd.com
+
+Thank you for using this tool to improve your website quality! 🚀
