@@ -1,0 +1,1157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Broken Link Detector - powered by ratl.ai</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://lovable.dev/app.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --lovable-primary: #0A5BF5;
+      --lovable-secondary: #00E6CA;
+      --lovable-accent: #FF3366;
+      --lovable-background: #F6F9FC;
+      --lovable-surface: #FFFFFF;
+      --lovable-text: #1A1F36;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--lovable-background);
+      color: var(--lovable-text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    .lovable-card {
+      background: var(--lovable-surface);
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 12px 32px rgba(10, 91, 245, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lovable-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 160px;
+      height: 160px;
+      background-image: url('https://lovable.dev/img/patterns/dots.svg');
+      opacity: 0.1;
+      pointer-events: none;
+    }
+
+    .lovable-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .lovable-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--lovable-text);
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--lovable-primary), var(--lovable-secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lovable-form {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .lovable-input {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      border: 2px solid #E6E8EB;
+      border-radius: 16px;
+      background: #FFFFFF;
+      transition: all 0.2s ease;
+    }
+
+    .lovable-input:focus {
+      outline: none;
+      border-color: var(--lovable-primary);
+      box-shadow: 0 0 0 4px rgba(10, 91, 245, 0.1);
+    }
+
+    .lovable-button {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: white;
+      background: var(--lovable-primary);
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lovable-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(10, 91, 245, 0.2);
+    }
+
+    .lovable-button::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: rotate(45deg);
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .lovable-progress {
+      background: #F6F9FC;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .lovable-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .lovable-step {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
+
+    .lovable-step::after {
+      content: '';
+      position: absolute;
+      left: 20px;
+      bottom: -1.5rem;
+      height: 1.5rem;
+      width: 2px;
+      background: #E6E8EB;
+      z-index: 1;
+    }
+
+    .lovable-step:last-child::after {
+      display: none;
+    }
+
+    .lovable-step.active {
+      background: rgba(10, 91, 245, 0.05);
+      border: 2px solid var(--lovable-primary);
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(10, 91, 245, 0.1);
+    }
+
+    .lovable-step.completed {
+      background: rgba(0, 230, 202, 0.05);
+      border: 2px solid var(--lovable-secondary);
+    }
+
+    .lovable-step.completed::after {
+      background: var(--lovable-secondary);
+    }
+
+    .lovable-step-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(10, 91, 245, 0.1);
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .lovable-step.completed .lovable-step-icon {
+      background: var(--lovable-secondary);
+      color: white;
+    }
+
+    .lovable-step.active .lovable-step-icon {
+      background: var(--lovable-primary);
+      color: white;
+      animation: pulse 2s infinite;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-status {
+      font-size: 0.9rem;
+      color: #6B7280;
+      margin-top: 0.25rem;
+    }
+
+    .typing-text {
+      display: inline-block;
+      white-space: pre-wrap;
+      border-right: 2px solid var(--lovable-primary);
+      animation: cursor-blink 1s step-end infinite;
+    }
+
+    @keyframes cursor-blink {
+      from, to { border-color: transparent }
+      50% { border-color: var(--lovable-primary); }
+    }
+
+    .insight-text {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .insight-text.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .analysis-content {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #1a1f36;
+      white-space: pre-wrap;
+    }
+
+    .analysis-content h3 {
+      color: var(--lovable-primary);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 1.5rem 0 1rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .analysis-content h3:first-child {
+      margin-top: 0;
+    }
+
+    .analysis-content pre {
+      background: rgba(26, 31, 54, 0.03);
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      overflow-x: auto;
+    }
+
+    .analysis-content code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(26, 31, 54, 0.03);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .analysis-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+
+    .analysis-content ul li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .analysis-content ul li::before {
+      content: '•';
+      position: absolute;
+      left: 0.5rem;
+      color: var(--lovable-primary);
+    }
+
+    .analysis-content .recommendation-item {
+      padding: 12px 16px;
+      background: rgba(0, 230, 202, 0.05);
+      border-left: 3px solid var(--lovable-secondary);
+      border-radius: 0 8px 8px 0;
+      margin: 8px 0;
+    }
+
+    .analysis-content .link-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: rgba(26, 31, 54, 0.03);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+
+    .analysis-content .status-badge {
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: 500;
+    }
+
+    .analysis-content .typing-block {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .analysis-content .typing-block.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .terminal-section {
+      background: #1E1E1E;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-header {
+      background: #2D2D2D;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      margin-right: 1rem;
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.red { background: #FF5F56; }
+    .terminal-dot.yellow { background: #FFBD2E; }
+    .terminal-dot.green { background: #27C93F; }
+
+    .terminal-title {
+      color: #ABABAB;
+      font-size: 0.9rem;
+    }
+
+    .terminal-content {
+      padding: 1rem;
+      color: #E4E4E4;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .terminal-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .terminal-content::-webkit-scrollbar-track {
+      background: #2D2D2D;
+    }
+
+    .terminal-content::-webkit-scrollbar-thumb {
+      background: #4D4D4D;
+      border-radius: 4px;
+    }
+
+    .terminal-content .command {
+      color: #569CD6;
+    }
+
+    .terminal-content .output {
+      color: #C5C5C5;
+    }
+
+    .terminal-content .error {
+      color: #F44747;
+    }
+
+    .terminal-content .success {
+      color: #6A9955;
+    }
+
+    .terminal-content table {
+      border-collapse: collapse;
+      margin: 1rem 0;
+      width: 100%;
+    }
+
+    .terminal-content th,
+    .terminal-content td {
+      border: 1px solid #4D4D4D;
+      padding: 0.5rem;
+    }
+
+    .terminal-content th {
+      background: #2D2D2D;
+      font-weight: bold;
+    }
+
+    .terminal-content code {
+      background: #2D2D2D;
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-content pre {
+      background: #2D2D2D;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    .terminal-content ul,
+    .terminal-content ol {
+      padding-left: 2rem;
+      margin: 1rem 0;
+    }
+
+    .terminal-content ul li {
+      list-style-type: disc;
+      margin: 0.25rem 0;
+    }
+
+    .terminal-content ol li {
+      list-style-type: decimal;
+      margin: 0.25rem 0;
+    }
+
+    .terminal-content blockquote {
+      border-left: 3px solid #4D4D4D;
+      margin: 1rem 0;
+      padding-left: 1rem;
+      color: #ABABAB;
+    }
+
+    .terminal-content hr {
+      border: none;
+      border-top: 1px solid #4D4D4D;
+      margin: 1rem 0;
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    .typing-content {
+      display: inline-block;
+      overflow: hidden;
+      border-right: 2px solid var(--lovable-primary);
+      white-space: pre-wrap;
+      animation: typing 2s steps(40, end), cursor-blink 0.75s step-end infinite;
+    }
+
+    .analysis-content .typing-block {
+      margin-bottom: 2rem;
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .analysis-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      background: rgba(26, 31, 54, 0.02);
+      border-radius: 8px;
+    }
+
+    .analysis-content th,
+    .analysis-content td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border: 1px solid rgba(26, 31, 54, 0.1);
+    }
+
+    .analysis-content th {
+      background: rgba(26, 31, 54, 0.05);
+      font-weight: 600;
+    }
+
+    .analysis-content tr:nth-child(even) {
+      background: rgba(26, 31, 54, 0.01);
+    }
+
+    .analysis-content .pattern-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(26, 31, 54, 0.02);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .analysis-content .pattern-icon {
+      flex-shrink: 0;
+      font-size: 1.25rem;
+    }
+
+    .analysis-content .pattern-details {
+      flex: 1;
+    }
+
+    .analysis-content .pattern-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .analysis-content .pattern-description {
+      color: var(--lovable-text);
+      opacity: 0.8;
+    }
+
+    .analysis-content .severity-high {
+      color: var(--lovable-accent);
+    }
+
+    .analysis-content .severity-medium {
+      color: #F59E0B;
+    }
+
+    .analysis-content .severity-low {
+      color: var(--lovable-secondary);
+    }
+
+    @media (max-width: 640px) {
+      .lovable-form {
+        flex-direction: column;
+      }
+      .lovable-button {
+        width: 100%;
+      }
+    }
+
+    .lovable-insight.success {
+      border: 2px solid var(--lovable-secondary);
+      background: rgba(0, 230, 202, 0.05);
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .lovable-insight.error {
+      border: 2px solid #F44747;
+      background: rgba(244, 71, 71, 0.05);
+      margin-bottom: 1rem;
+    }
+
+    #downloads {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.5s ease;
+    }
+
+    #downloads.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .download-button {
+      background: var(--lovable-primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .download-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(10, 91, 245, 0.2);
+    }
+
+    /* Centerline and spacing for Agentic Workflow Steps */
+    .agentic-workflow-steps {
+      margin: 2.5rem 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .agentic-workflow-steps::before,
+    .agentic-workflow-steps::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #0A5BF5, transparent);
+    }
+
+    .agentic-workflow-steps::before {
+      left: 0;
+    }
+
+    .agentic-workflow-steps::after {
+      right: 0;
+    }
+
+    .agentic-workflow-steps h3 {
+      display: inline-block;
+      background: #F6F9FC;
+      padding: 0 1rem;
+      margin: 0;
+      position: relative;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="lovable-header">
+      <a href="https://www.ratl.ai/" target="_blank" rel="noopener" class="lovable-logo">
+        <img src="https://www.ratl.ai/_next/image?url=%2Fratl%2Flogo%2Fratl_logo_black.png&w=256&q=75" 
+             alt="ratl.ai logo" 
+             style="width: 140px; height: auto; margin-bottom: 1rem;" />
+      </a>
+      <h1 class="lovable-title">AI-powered Broken Link Detector</h1>
+    </header>
+
+    <div class="lovable-card">
+      <form id="scanForm" class="lovable-form">
+        <input
+          type="text"
+          id="urlInput"
+          name="url_input"
+          placeholder="Enter URL or domain or 'test'"
+          class="lovable-input"
+          autocomplete="off"
+          aria-required="true"
+        />
+        <button type="submit" id="scanBtn" class="lovable-button">Scan</button>
+      </form>
+
+      <div id="intentDisplay" class="lovable-insight" style="display: none;">
+        <div class="lovable-insight-header">
+          <span>🤖</span>
+          <span>ChatGPT Interpreted Intent</span>
+        </div>
+        <div class="intent-details">
+          <!-- Intent details will be populated here -->
+        </div>
+      </div>
+
+      <div class="lovable-progress">
+        <div class="lovable-steps">
+          <div class="lovable-step" data-step="1">
+            <div class="lovable-step-icon" style="background:#F3E8FF;color:#C026D3;">🧠</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Interpret User Intent</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Understands user input and configures scan parameters</div>
+            </div>
+          </div>
+          <div class="lovable-step" data-step="2">
+            <div class="lovable-step-icon" style="background:#E0F2FE;color:#0284C7;">🕸️</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Crawl and Extract</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Crawls site, extracts all links</div>
+            </div>
+          </div>
+          <div class="lovable-step" data-step="3">
+            <div class="lovable-step-icon" style="background:#DCFCE7;color:#16A34A;">🔎</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Identify Failure Pattern</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Checks links, finds broken ones, detects failure patterns</div>
+            </div>
+          </div>
+          <div class="lovable-step" data-step="4">
+            <div class="lovable-step-icon" style="background:#DBEAFE;color:#2563EB;">🧩</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Correlate Events</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Groups failures by type/time/metadata for deeper analysis</div>
+            </div>
+          </div>
+          <div class="lovable-step" data-step="5">
+            <div class="lovable-step-icon" style="background:#FEF9C3;color:#F59E0B;">💡</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Generate Insights</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Produces insights, anomaly detection, root cause hypotheses</div>
+            </div>
+          </div>
+          <div class="lovable-step" data-step="6">
+            <div class="lovable-step-icon" style="background:#F3F4F6;color:#374151;">📄</div>
+            <div>
+              <div style="font-weight: 600; color:#0A5BF5;">Report Results</div>
+              <div style="font-size: 0.9rem; color: #6B7280;">Generates and saves reports in multiple formats</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="agentic-workflow-steps">
+        <h3>Agentic Workflow Steps</h3>
+        <div class="analysis-content" style="margin: 0 auto;">
+          <table style="margin: 0 auto; border-collapse: collapse; width: 100%; background: #fff;">
+            <thead>
+              <tr>
+                <th style="border: 1px solid #d1d5db; background: #f6f9fc;">Node Name</th>
+                <th style="border: 1px solid #d1d5db; background: #f6f9fc;">Agentic Step</th>
+                <th style="border: 1px solid #d1d5db; background: #f6f9fc;">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>interpret_user_intent</code></td>
+                <td style="border: 1px solid #d1d5db;">Interpret User Intent</td>
+                <td style="border: 1px solid #d1d5db;">Understands user input and configures scan parameters</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>crawl_and_extract</code></td>
+                <td style="border: 1px solid #d1d5db;">Select Relevant Logs</td>
+                <td style="border: 1px solid #d1d5db;">Crawls site, extracts all links</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>identify_failure_pattern</code></td>
+                <td style="border: 1px solid #d1d5db;">Identify Failure Pattern</td>
+                <td style="border: 1px solid #d1d5db;">Checks links, finds broken ones, detects failure patterns</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>correlate_events</code></td>
+                <td style="border: 1px solid #d1d5db;">Correlate Events</td>
+                <td style="border: 1px solid #d1d5db;">Groups failures by type/time/metadata for deeper analysis</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>generate_insights</code></td>
+                <td style="border: 1px solid #d1d5db;">Generate Insights, Detect Anomalies, Hypothesize Root Cause</td>
+                <td style="border: 1px solid #d1d5db;">Produces insights, anomaly detection, root cause hypotheses</td>
+              </tr>
+              <tr>
+                <td style="border: 1px solid #d1d5db;"><code>report_results</code></td>
+                <td style="border: 1px solid #d1d5db;">Report Output</td>
+                <td style="border: 1px solid #d1d5db;">Generates and saves reports in multiple formats</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="terminal-section">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="terminal-dot red"></span>
+            <span class="terminal-dot yellow"></span>
+            <span class="terminal-dot green"></span>
+          </div>
+          <span class="terminal-title">Terminal Output</span>
+        </div>
+        <div id="progressContainer" class="terminal-content"></div>
+      </div>
+
+      <div id="result" role="alert" class="lovable-insight" style="display: none;"></div>
+      
+    </div>
+
+    <div id="downloads" class="lovable-card" style="text-align: center; margin-top: 1rem;"></div>
+  </div>
+
+<script>
+  const form = document.getElementById('scanForm');
+  const progressContainer = document.getElementById('progressContainer');
+  const resultDiv = document.getElementById('result');
+  const downloadsDiv = document.getElementById('downloads');
+  const scanBtn = document.getElementById('scanBtn');
+  const urlInput = document.getElementById('urlInput');
+  let eventSource;
+  let lastScanUrl = '';
+
+  function appendToTerminal(text, type = 'output') {
+    const span = document.createElement('span');
+    span.className = type;
+    span.textContent = text;
+    progressContainer.appendChild(span);
+    progressContainer.scrollTop = progressContainer.scrollHeight;
+  }
+
+  function updateWorkflowSteps(currentStep, scanCompleted = false) {
+    document.querySelectorAll('.lovable-step').forEach((step, index) => {
+      if (scanCompleted && index + 1 >= 4) {
+        step.classList.add('completed');
+        step.classList.remove('active');
+      } else if (index + 1 < currentStep) {
+        step.classList.add('completed');
+        step.classList.remove('active');
+      } else if (index + 1 === currentStep) {
+        step.classList.add('active');
+        step.classList.remove('completed');
+      } else {
+        step.classList.remove('completed', 'active');
+      }
+    });
+  }
+
+  // Map backend progress messages to step numbers
+  function getStepFromMessage(msg) {
+    if (msg.includes('ChatGPT interpreted intent')) return 2;
+    if (msg.includes('Crawling') || msg.includes('extracting links')) return 3;
+    if (msg.includes('Identifying') || msg.includes('failure pattern')) return 4;
+    if (msg.includes('Correlate Events')) return 5;
+    if (msg.includes('Insights') || msg.includes('anomaly') || msg.includes('root cause')) return 6;
+    if (msg.includes('Report') || msg.includes('report generated')) return 7;
+    return 1;
+  }
+
+  function updateStepStatus(step, status) {
+    const statusDiv = step.querySelector('[data-status]') || 
+                     step.querySelector('.step-status');
+    if (statusDiv) {
+      typeTextWithCursor(statusDiv, status);
+    }
+  }
+
+  function handleError(error) {
+    if (eventSource) {
+      eventSource.close();
+      eventSource = null;
+    }
+    const errorMessage = error.message || 'An unexpected error occurred. Please try again.';
+    appendToTerminal(`Error: ${errorMessage}\n`, 'error');
+    resultDiv.innerHTML = `
+      <div style="text-align: center; padding: 1rem;">
+        <div style="color: #F44747; margin-bottom: 0.5rem;">❌ ${errorMessage}</div>
+        <button onclick="retryLastScan()" class="lovable-button" style="background: var(--lovable-secondary);">
+          🔄 Retry Scan
+        </button>
+      </div>
+    `;
+    resultDiv.style.display = 'block';
+    resultDiv.className = 'lovable-insight error';
+    updateWorkflowSteps(1);
+    document.querySelectorAll('.lovable-step').forEach(step => {
+      step.classList.remove('active', 'completed');
+    });
+    scanBtn.disabled = false;
+    urlInput.disabled = false;
+  }
+
+  function retryLastScan() {
+    if (lastScanUrl) {
+      startScan(lastScanUrl);
+    }
+  }
+
+  async function startScan(url, retryCount = 0) {
+    lastScanUrl = url;
+    try {
+      // Reset UI state first
+      progressContainer.textContent = '';
+      resultDiv.style.display = 'none';
+      downloadsDiv.innerHTML = '';
+      document.getElementById('intentDisplay').style.display = 'none';
+
+      // Close any existing EventSource
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+
+      // Show connecting message
+      appendToTerminal('Connecting to server...\n', 'info');
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+      const response = await fetch('/start_scan', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: `url_input=${encodeURIComponent(url)}`,
+        signal: controller.signal
+      }).finally(() => clearTimeout(timeoutId));
+
+      if (!response.ok) {
+        // If we got a 429 (Too Many Requests), wait and retry
+        if (response.status === 429 && retryCount < 3) {
+          const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+          return startScan(url, retryCount + 1);
+        }
+        throw new Error(response.statusText || 'Server error. Please try again.');
+      }
+
+      console.log('Scan started successfully');
+      let progressIndex = 0;
+
+      if (eventSource) {
+        eventSource.close();
+      }
+
+      // Initialize EventSource with retry logic
+      let retryAttempt = 0;
+      const maxRetries = 3;
+      const initEventSource = () => {
+        return new Promise((resolve, reject) => {
+          try {
+            eventSource = new EventSource('/scan');
+            
+            const connectionTimeout = setTimeout(() => {
+              if (eventSource && eventSource.readyState === 0) {
+                eventSource.close();
+                if (retryAttempt < maxRetries) {
+                  retryAttempt++;
+                  appendToTerminal(`Connection attempt ${retryAttempt} of ${maxRetries}...\n`, 'info');
+                  initEventSource().then(resolve).catch(reject);
+                } else {
+                  reject(new Error('Connection timeout after multiple attempts. Please try again.'));
+                }
+              }
+            }, 5000); // 5 second timeout per attempt
+            
+            eventSource.onopen = function() {
+              console.log('EventSource connected');
+              clearTimeout(connectionTimeout);
+              updateWorkflowSteps(1);
+              appendToTerminal('Connected successfully.\n', 'success');
+              resolve();
+            };
+
+            eventSource.onerror = function(event) {
+              clearTimeout(connectionTimeout);
+              if (retryAttempt < maxRetries) {
+                retryAttempt++;
+                appendToTerminal(`Reconnecting... Attempt ${retryAttempt} of ${maxRetries}\n`, 'info');
+                if (eventSource) eventSource.close();
+                setTimeout(() => {
+                  initEventSource().then(resolve).catch(reject);
+                }, 1000 * retryAttempt);
+              } else {
+                reject(new Error('Connection lost after multiple attempts. Please try again.'));
+              }
+            };
+          } catch (error) {
+            reject(error);
+          }
+        });
+      };
+
+      try {
+        await initEventSource();
+      } catch (error) {
+        appendToTerminal(`Error: ${error.message}\n`, 'error');
+        handleError(error);
+      }
+      eventSource.onmessage = function (e) {
+        const msg = e.data;
+        console.log('Received message:', msg);
+
+        if (msg.includes('ChatGPT interpreted intent')) {
+          try {
+            const intentStr = msg.substring(msg.indexOf('{'), msg.lastIndexOf('}') + 1);
+            const intent = JSON.parse(intentStr.replace(/'/g, '"'));
+            
+            const intentDisplay = document.getElementById('intentDisplay');
+            const details = intentDisplay.querySelector('.intent-details');
+            details.innerHTML = `
+              <div class="lovable-insight-content">
+                <p><strong>URL:</strong> ${intent.url || 'N/A'}</p>
+                <p><strong>Scan Type:</strong> ${(intent.scan_type || '').replace('_', ' ')}</p>
+                <p><strong>Include Paths:</strong> ${intent.include_paths?.join(', ') || 'All paths'}</p>
+                <p><strong>Exclude Paths:</strong> ${intent.exclude_paths?.join(', ') || 'None'}</p>
+                <p><strong>Notes:</strong> ${intent.notes || 'No additional notes'}</p>
+              </div>
+            `;
+            intentDisplay.style.display = 'block';
+            updateWorkflowSteps(2);
+            updateStepStatus(document.querySelector('.lovable-step[data-step="1"]'), '✓ Intent analyzed');
+          } catch (error) {
+            console.error('Error parsing intent:', error);
+          }
+        } else if (msg === "Workflow completed") {
+          appendToTerminal('✅ ' + msg + '\n', 'success');
+          updateWorkflowSteps(4);
+          updateStepStatus(document.querySelector('.lovable-step[data-step="4"]'), '✓ Reports generated');
+          if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+          }
+          resultDiv.innerHTML = `
+            <div class="lovable-insight success" style="text-align: center; padding: 1rem;">
+              <div style="font-size: 1.2rem; margin-bottom: 1rem;">
+                ✅ Scan completed successfully
+              </div>
+            </div>
+          `;
+          resultDiv.style.display = 'block';
+          const domain = urlInput.value.trim().replace(/https?:\/\//, '').split(/[\/\?]/)[0] || 'test';
+          fetchReportDetails(domain);
+          downloadsDiv.classList.add('visible');
+          scanBtn.disabled = false;
+          urlInput.disabled = false;
+        } else if (msg.startsWith("Error:")) {
+          appendToTerminal(msg + '\n', 'error');
+          resultDiv.innerHTML = `<div class='lovable-insight error' style='text-align:center;'>${msg}</div>`;
+          resultDiv.style.display = 'block';
+          if (eventSource) eventSource.close();
+          scanBtn.disabled = false;
+          urlInput.disabled = false;
+        } else {
+          if (msg.startsWith('$') || msg.startsWith('>')) {
+            appendToTerminal(msg + '\n', 'command');
+          } else if (msg.toLowerCase().includes('error') || msg.toLowerCase().includes('failed')) {
+            appendToTerminal(msg + '\n', 'error');
+          } else if (msg.toLowerCase().includes('success') || msg.toLowerCase().includes('completed')) {
+            appendToTerminal(msg + '\n', 'success');
+          } else {
+            appendToTerminal(msg + '\n');
+          }
+
+          // Dynamically update stepper based on backend progress
+          const stepNum = getStepFromMessage(msg);
+          // If scan completed, highlight last 3 steps as completed (green)
+          if (msg === "Workflow completed") {
+            updateWorkflowSteps(stepNum, true);
+          } else {
+            updateWorkflowSteps(stepNum);
+          }
+
+          if (msg.includes("Crawling")) {
+            updateStepStatus(document.querySelector('.lovable-step[data-step="2"]'), '⟳ Crawling links...');
+          } else if (msg.includes("extracting links")) {
+            updateStepStatus(document.querySelector('.lovable-step[data-step="2"]'), '✓ Links extracted');
+          } else if (msg.includes("Identifying")) {
+            updateStepStatus(document.querySelector('.lovable-step[data-step="3"]'), '⟳ Analyzing patterns...');
+          }
+        }
+      };
+
+      eventSource.onerror = function (err) {
+        handleError(err);
+      }
+    } catch (error) {
+      console.error('Error starting scan:', error);
+      resultDiv.textContent = `Error: ${error.message}`;
+      resultDiv.style.display = 'block';
+      resultDiv.className = 'lovable-insight error';
+      scanBtn.disabled = false;
+      urlInput.disabled = false;
+    }
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    console.log('Form submitted');
+
+    // Reset UI
+    progressContainer.textContent = '';
+    resultDiv.style.display = 'none';
+    downloadsDiv.innerHTML = '';
+    document.getElementById('intentDisplay').style.display = 'none';
+
+    // Reset workflow steps
+    updateWorkflowSteps(1);
+
+    // Disable inputs
+    scanBtn.disabled = true;
+    urlInput.disabled = true;
+
+    const url = urlInput.value.trim();
+    console.log('Scanning URL:', url);
+
+    // Start the scan
+    await startScan(url);
+  });
+
+  async function fetchReportDetails(domain) {
+    try {
+      downloadsDiv.innerHTML = `
+        <div class="lovable-insight-header" style="justify-content: center;">
+          <span>⌛</span>
+          <span>Loading reports...</span>
+        </div>
+      `;
+      const response = await fetch('/reports');
+      if (!response.ok) {
+        throw new Error('Failed to fetch reports');
+      }
+      
+      const folders = await response.json();
+      const matchingFolder = folders.find(f => f.startsWith(domain));
+      
+      if (matchingFolder) {
+        downloadsDiv.innerHTML = `
+          <div class="lovable-card" style="margin: 0;">
+            <div class="lovable-insight-header" style="justify-content: center; margin-bottom: 1rem;">
+              <span>📊</span>
+              <span>Download Reports</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+              <a href="/outputs/${matchingFolder}/broken_links_report.html" 
+                 target="_blank" 
+                 class="lovable-button"
+                 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📄</span> HTML Report
+              </a>
+              <a href="/outputs/${matchingFolder}/broken_links_report.pdf" 
+                 target="_blank" 
+                 class="lovable-button"
+                 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📑</span> PDF Report
+              </a>
+              <a href="/outputs/${matchingFolder}/broken_links_report.csv" 
+                 target="_blank" 
+                 class="lovable-button"
+                 style="display: flex; align-items: center; gap: 0.5rem;">
+                <span>📊</span> CSV Report
+              </a>
+            </div>
+          </div>
+        `;
+        downloadsDiv.classList.add('visible');
+      } else {
+        downloadsDiv.innerHTML = `
+          <div class="lovable-insight error" style="text-align: center; padding: 1rem;">
+            <span>⚠️</span> No reports available for download.
+          </div>
+        `;
+      }
+    } catch (error) {
+      downloadsDiv.innerHTML = `
+        <div class="lovable-insight error" style="text-align: center; padding: 1rem;">
+          <span>❌</span> Failed to load reports. Please try again.
+        </div>
+      `;
+    }
+  }
+</script>
+</body>
+</html>

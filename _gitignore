@@ -1,0 +1,40 @@
+# Virtual environment
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# LangGraph generated files
+langgraph.json
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+
+# Outputs folder (scan reports)
+outputs/
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Shell scripts
+package_project.sh
+
+# Env files (if any)
+.env
+.env.*
+
+# Logs and temp files
+*.log
+tmp/
