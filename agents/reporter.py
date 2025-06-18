@@ -215,7 +215,7 @@ def send_slack_notification(webhook_url, html_report_url, domain):
     domain_key = domain.lower().split('.')[0]
     logo = domain_logos.get(domain_key, '')
     if logo:
-        domain_display = f"{domain} {logo}"
+        domain_display = f"{domain} {logo}".strip()
     else:
         domain_display = domain
     message = (
