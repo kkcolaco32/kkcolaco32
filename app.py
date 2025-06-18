@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
+print(f"DEBUG: OPENAI_API_KEY is set: {bool(os.getenv('OPENAI_API_KEY'))}")
+
 from flask import Flask, render_template, request, Response, session, abort, jsonify, send_from_directory
 from your_workflow_runner import run_workflow_with_progress
 import os

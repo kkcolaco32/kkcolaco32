@@ -27,6 +27,13 @@ pip3 install -r requirements.txt
 
 ## Usage
 
+Before running, copy `.env.example` to `.env` and add your OpenAI API key:
+
+```sh
+cp .env.example .env
+# Then edit .env and set your OPENAI_API_KEY
+```
+
 Run the scanner:
 
 python3 main.py

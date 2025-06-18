@@ -1,10 +1,9 @@
 from urllib.parse import urlparse
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 import os
-import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-llm = ChatOpenAI(openai_api_key=openai.api_key, model="gpt-4o-mini")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+llm = ChatOpenAI(api_key=openai_api_key, model="gpt-4o-mini")
 
 def generate_insights(state):
     broken_links = state.get("broken_links", {})

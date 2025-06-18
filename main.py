@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 from graph import graph
 
 def main():

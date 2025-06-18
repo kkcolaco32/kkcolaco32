@@ -1,12 +1,13 @@
 import os
 import json
 import re
-from langchain.chat_models import ChatOpenAI
-import openai
+from langchain_openai import ChatOpenAI
 import time
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-llm = ChatOpenAI(openai_api_key=openai.api_key, model="gpt-4.1")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise RuntimeError("OPENAI_API_KEY environment variable not set. Please check your .env file and ensure it is loaded before importing this module.")
+llm = ChatOpenAI(api_key=openai_api_key, model="gpt-4.1")
 
 def chatgpt_interpret_intent(state):
     user_input = state["input_url"].strip()
