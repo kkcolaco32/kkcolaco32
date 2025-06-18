@@ -1,22 +1,21 @@
 # Core dependencies
+Flask==3.1.1
 requests==2.32.4
 beautifulsoup4==4.13.4
 tqdm==4.67.1
 langgraph==0.4.8
-langchain==0.3.25
-langchain-community==0.3.25
 langchain-openai==0.3.24
-openai==1.88.0
+python-dotenv==1.1.0
 fpdf==1.7.2
 google-cloud-storage==3.1.1
 schedule==1.2.2
-
-# Web application
-Flask==3.1.1
+playwright==1.52.0
+networkx==3.5
+matplotlib==3.10.3
 
 # Testing
 pytest==8.4.1
 pytest-cov==6.2.1
 
 # Development
-python-dotenv==1.1.0
+# (add any dev-only packages here)
