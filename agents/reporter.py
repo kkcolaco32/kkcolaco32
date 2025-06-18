@@ -1,9 +1,18 @@
 import os
 import datetime
-import webbrowser
 import csv
 from urllib.parse import urlparse
 from fpdf import FPDF
+import smtplib
+import requests
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+from dotenv import load_dotenv
+from google.cloud import storage
+
+load_dotenv()
 
 def generate_pdf_report(pdf_file, url, all_links_status):
     pdf = FPDF()
@@ -129,7 +138,28 @@ th {{
 
         generate_pdf_report(pdf_filename, url, all_links_status)
 
-        webbrowser.open(f'file://{os.path.abspath(html_filename)}')
+        # Upload HTML report to GCS and get public URL
+        gcs_bucket = os.getenv('GCS_BUCKET')
+        html_report_url = None
+        if gcs_bucket:
+            gcs_key = os.path.join(f"broken-link-reports/{os.path.basename(output_folder)}", os.path.basename(html_filename))
+            html_report_url = upload_to_gcs(html_filename, gcs_bucket, gcs_key)
+        if not html_report_url:
+            html_report_url = f"file://{os.path.abspath(html_filename)}"
+
+        domain = urlparse(url).netloc or url
+        # Gmail config (fixed sender/recipient/subject)
+        gmail_user = 'kevincolaco@gofynd.com'
+        gmail_pass = os.getenv('GMAIL_PASS')
+        gmail_to = 'bhuvaneshkachave@gofynd.com'
+        subject = 'AI-powered Broken Link Detector Report'
+        summary = f"Broken Link Report for {url}\nTotal: {len(all_links_status)} | Broken: {len(broken_links)}"
+
+        slack_webhook = os.getenv('SLACK_WEBHOOK_URL')
+        if slack_webhook:
+            send_slack_notification(slack_webhook, html_report_url, domain)
+        if gmail_user and gmail_pass and gmail_to:
+            send_gmail_report(gmail_user, gmail_pass, gmail_to, subject, summary, [txt_filename, csv_filename, pdf_filename])
 
     # --- Agentic Workflow Summary ---
     summary_lines = [
@@ -161,3 +191,55 @@ th {{
     print(f"📄 Reports saved inside folder: {output_folder}")
 
     return {"report": report}
+
+def upload_to_gcs(file_path, bucket_name, object_name=None):
+    client = storage.Client()
+    bucket = client.bucket(bucket_name)
+    if object_name is None:
+        object_name = os.path.basename(file_path)
+    blob = bucket.blob(object_name)
+    blob.upload_from_filename(file_path, content_type='text/html')
+    # Do not call blob.make_public() if uniform bucket-level access is enabled
+    return blob.public_url
+
+def send_slack_notification(webhook_url, html_report_url, domain):
+    # Map known domains to Slack emoji logos
+    domain_logos = {
+        'jiomart': ':jiomart:',
+        'ratl': ':ratl:',
+        'tirabeauty': ':tirabeauty:',
+        'fynd': ':fynd:',
+        'test': ':test:',
+        # Add more domain:emoji mappings as needed
+    }
+    domain_key = domain.lower().split('.')[0]
+    logo = domain_logos.get(domain_key, '')
+    if logo:
+        domain_display = f"{domain} {logo}"
+    else:
+        domain_display = domain
+    message = (
+        f"*Domain:* {domain_display}\n"
+        f"*Report Link:* <{html_report_url}|Tap Me :tapme:>"
+    )
+    payload = {"text": message}
+    requests.post(webhook_url, json=payload)
+
+def send_gmail_report(sender_email, sender_password, recipient_email, subject, body, attachments=None):
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+    attachments = attachments or []
+    for file_path in attachments:
+        part = MIMEBase('application', 'octet-stream')
+        with open(file_path, 'rb') as f:
+            part.set_payload(f.read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition', f'attachment; filename={os.path.basename(file_path)}')
+        msg.attach(part)
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.send_message(msg)

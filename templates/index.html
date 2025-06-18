@@ -661,6 +661,28 @@
         />
         <button type="submit" id="scanBtn" class="lovable-button">Scan</button>
       </form>
+      <form id="scheduleForm" class="lovable-form" style="margin-top:1rem;">
+        <input
+          type="text"
+          id="scheduleDomain"
+          name="schedule_domain"
+          placeholder="Domain for scheduled scan (default: test)"
+          class="lovable-input"
+        />
+        <input
+          type="time"
+          id="scheduleTime"
+          name="schedule_time"
+          class="lovable-input"
+          value="15:00"
+        />
+        <select id="scheduleFrequency" name="schedule_frequency" class="lovable-input">
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+        </select>
+        <button type="button" id="scheduleBtn" class="lovable-button">Schedule</button>
+      </form>
 
       <div id="intentDisplay" class="lovable-insight" style="display: none;">
         <div class="lovable-insight-header">
@@ -1089,6 +1111,30 @@
 
     // Start the scan
     await startScan(url);
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const scheduleBtn = document.getElementById('scheduleBtn');
+    if (scheduleBtn) {
+      scheduleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const domain = document.getElementById('scheduleDomain').value;
+        const time = document.getElementById('scheduleTime').value;
+        const frequency = document.getElementById('scheduleFrequency').value;
+        fetch('/schedule_scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `schedule_domain=${encodeURIComponent(domain)}&schedule_time=${encodeURIComponent(time)}&schedule_frequency=${encodeURIComponent(frequency)}`
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert('Scheduled!\n' + JSON.stringify(data.config, null, 2));
+        })
+        .catch(err => {
+          alert('Failed to schedule: ' + err);
+        });
+      });
+    }
   });
 
   async function fetchReportDetails(domain) {

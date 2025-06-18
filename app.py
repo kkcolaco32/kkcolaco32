@@ -51,5 +51,21 @@ def serve_reports(filename):
         abort(404)
     return send_from_directory(reports_dir, filename)
 
+@app.route('/schedule_scan', methods=['POST'])
+def schedule_scan():
+    domain = request.form.get('schedule_domain', '').strip() or 'test'
+    time_str = request.form.get('schedule_time', '15:00')
+    frequency = request.form.get('schedule_frequency', 'daily')
+    # Save schedule config to a file for the scheduler to pick up
+    config = {
+        'domain': domain,
+        'time': time_str,
+        'frequency': frequency
+    }
+    import json
+    with open('schedule_config.json', 'w') as f:
+        json.dump(config, f)
+    return jsonify({'status': 'scheduled', 'config': config})
+
 if __name__ == "__main__":
     app.run(debug=True, threaded=True)

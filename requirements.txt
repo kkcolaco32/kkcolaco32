@@ -1,5 +1,5 @@
 # Core dependencies
-requests>=2.31.0
+requests
 beautifulsoup4>=4.12.0
 tqdm>=4.65.0
 langgraph>=0.0.15
@@ -8,6 +8,8 @@ langchain-community>=0.0.10
 langchain-openai>=0.0.5
 openai>=1.0.0
 fpdf>=1.7.2
+google-cloud-storage
+schedule
 
 # Web application
 Flask>=3.0.0
@@ -17,4 +19,4 @@ pytest>=7.4.0
 pytest-cov>=4.1.0
 
 # Development
-python-dotenv>=1.0.0
+python-dotenv
