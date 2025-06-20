@@ -97,6 +97,19 @@ ai-broken-link-detector/
 | generate_insights        | Generate Insights, Detect Anomalies, Hypothesize Root Cause | Produces insights, anomaly detection, root cause hypotheses |
 | report_results           | Report Output               | Generates and saves reports in multiple formats                  |
 
+## Required Environment Variables
+Add these to your `.env` file:
+
+- `OPENAI_API_KEY` (required)
+- `GMAIL_PASS` (for Gmail notifications)
+- `SLACK_WEBHOOK_URL` (for Slack notifications)
+- `GCS_BUCKET` (for Google Cloud Storage report uploads, optional)
+
+## Secrets & API Keys
+- **Never commit secrets!**
+- All secrets are loaded from `.env` (see `.gitignore`)
+- Example `.env.example` is provided
+
 🧪 Testing
 
 Run tests with:

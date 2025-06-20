@@ -1,5 +1,9 @@
 # Python virtual environment
 venv/
+.env
+.env.*
+.venv
+.venv/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -46,20 +50,17 @@ coverage.xml
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
 
-# Environments
-.env
-.env.*
-.venv
-.venv/*
-
 # VS Code settings
 .vscode/
 
 # macOS system files
 .DS_Store
 
-# outputs folder with scan reports
+# Output folders
 outputs/
 
-# sample_reports folder if you want to exclude them (optional)
-# sample_reports/
+# Google Cloud credentials
+credentials.json
+
+# LangGraph checkpoints
+.langgraph_api/

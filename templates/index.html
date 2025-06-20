@@ -645,7 +645,7 @@
              alt="ratl.ai logo" 
              style="width: 140px; height: auto; margin-bottom: 1rem;" />
       </a>
-      <h1 class="lovable-title">AI-powered Broken Link Detector</h1>
+      <h1 class="lovable-title">Agentic Broken Link Detector</h1>
     </header>
 
     <div class="lovable-card">
@@ -1128,7 +1128,8 @@
         })
         .then(res => res.json())
         .then(data => {
-          alert('Scheduled!\n' + JSON.stringify(data.config, null, 2));
+          // Replace alert with application-style popup
+          showAppPopup('Scheduled!', JSON.stringify(data.config, null, 2));
         })
         .catch(err => {
           alert('Failed to schedule: ' + err);
@@ -1136,6 +1137,41 @@
       });
     }
   });
+
+  // Application-style popup for schedule and other notifications
+  function showAppPopup(title, message) {
+    let popup = document.getElementById('appPopup');
+    if (!popup) {
+      popup = document.createElement('div');
+      popup.id = 'appPopup';
+      popup.style.position = 'fixed';
+      popup.style.top = '50%';
+      popup.style.left = '50%';
+      popup.style.transform = 'translate(-50%, -50%)';
+      popup.style.background = '#fff';
+      popup.style.border = '2px solid #0A5BF5';
+      popup.style.borderRadius = '16px';
+      popup.style.boxShadow = '0 8px 32px rgba(10,91,245,0.15)';
+      popup.style.padding = '2rem 2.5rem';
+      popup.style.zIndex = 9999;
+      popup.style.textAlign = 'center';
+      popup.style.minWidth = '320px';
+      popup.style.maxWidth = '90vw';
+      popup.innerHTML = `
+        <div style="font-size:1.5rem;font-weight:700;color:#0A5BF5;margin-bottom:1rem;">${title}</div>
+        <div style="font-size:1rem;color:#333;margin-bottom:1.5rem;white-space:pre-line;">${message}</div>
+        <button id="closeAppPopup" style="background:#0A5BF5;color:#fff;padding:0.5rem 1.5rem;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">OK</button>
+      `;
+      document.body.appendChild(popup);
+      document.getElementById('closeAppPopup').onclick = function() {
+        popup.remove();
+      };
+    } else {
+      popup.querySelector('div').innerText = title;
+      popup.querySelector('div + div').innerText = message;
+      popup.style.display = 'block';
+    }
+  }
 
   async function fetchReportDetails(domain) {
     try {

@@ -37,4 +37,4 @@ def correlate_events(state):
     }
     state["correlated_events"] = correlated
     print(f"🧩 Correlated Events: {len(correlated['groups'])} groups found.")
-    return {"correlated_events": correlated}
+    return state

@@ -69,4 +69,6 @@ def crawl_and_extract(state):
     else:
         all_links, domain = crawl_site(url)
         all_links = filter_links(all_links, include_paths, exclude_paths)
-    return {"input_url": url, "all_links": all_links, "domain": domain}
+    result = {"input_url": url, "all_links": all_links, "domain": domain}
+    print(f"[DEBUG] crawl_and_extract returning: {result} (type: {type(result)})")
+    return result

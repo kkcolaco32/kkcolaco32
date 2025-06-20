@@ -6,8 +6,17 @@ from datetime import datetime
 import json
 
 def run_scan(domain):
-    print(f"[SCHEDULER] Triggering scan for domain: {domain} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    subprocess.run(["python3", "main.py", domain])
+    LOCK_FILE = 'scan.lock'
+    if os.path.exists(LOCK_FILE):
+        print(f"[SCHEDULER] Scan already in progress. Skipping scheduled scan for {domain}.")
+        return
+    try:
+        open(LOCK_FILE, 'w').close()
+        print(f"[SCHEDULER] Triggering scan for domain: {domain} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        subprocess.run(["python3", "main.py", domain])
+    finally:
+        if os.path.exists(LOCK_FILE):
+            os.remove(LOCK_FILE)
 
 def main():
     config_path = 'schedule_config.json'

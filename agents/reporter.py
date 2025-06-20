@@ -148,16 +148,19 @@ th {{
             html_report_url = f"file://{os.path.abspath(html_filename)}"
 
         domain = urlparse(url).netloc or url
+        # --- SCHEDULED PREFIX LOGIC ---
+        is_scheduled = state.get("scheduled", False)
+        prefix = "SCHEDULED: " if is_scheduled else ""
         # Gmail config (fixed sender/recipient/subject)
         gmail_user = 'kevincolaco@gofynd.com'
         gmail_pass = os.getenv('GMAIL_PASS')
         gmail_to = 'bhuvaneshkachave@gofynd.com'
-        subject = 'AI-powered Broken Link Detector Report'
-        summary = f"Broken Link Report for {url}\nTotal: {len(all_links_status)} | Broken: {len(broken_links)}"
+        subject = f'{prefix}AI-powered Broken Link Detector Report'
+        summary = f"{prefix}Broken Link Report for {url}\nTotal: {len(all_links_status)} | Broken: {len(broken_links)}"
 
         slack_webhook = os.getenv('SLACK_WEBHOOK_URL')
         if slack_webhook:
-            send_slack_notification(slack_webhook, html_report_url, domain)
+            send_slack_notification(slack_webhook, html_report_url, domain, prefix=prefix)
         if gmail_user and gmail_pass and gmail_to:
             send_gmail_report(gmail_user, gmail_pass, gmail_to, subject, summary, [txt_filename, csv_filename, pdf_filename])
 
@@ -190,7 +193,8 @@ th {{
     print(f"\n✅ Scan complete! {len(broken_links)} broken links found out of {len(all_links_status)} checked.")
     print(f"📄 Reports saved inside folder: {output_folder}")
 
-    return {"report": report}
+    state["report"] = report if report else "No report generated."
+    return state
 
 def upload_to_gcs(file_path, bucket_name, object_name=None):
     client = storage.Client()
@@ -202,7 +206,7 @@ def upload_to_gcs(file_path, bucket_name, object_name=None):
     # Do not call blob.make_public() if uniform bucket-level access is enabled
     return blob.public_url
 
-def send_slack_notification(webhook_url, html_report_url, domain):
+def send_slack_notification(webhook_url, html_report_url, domain, prefix=""):
     # Map known domains to Slack emoji logos
     domain_logos = {
         'jiomart': ':jiomart:',
@@ -219,7 +223,7 @@ def send_slack_notification(webhook_url, html_report_url, domain):
     else:
         domain_display = domain
     message = (
-        f"*Domain:* {domain_display}\n"
+        f"{prefix}*Domain:* {domain_display}\n"
         f"*Report Link:* <{html_report_url}|Tap Me :tapme:>"
     )
     payload = {"text": message}
