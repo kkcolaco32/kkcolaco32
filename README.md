@@ -123,6 +123,3 @@ Feel free to open issues or pull requests to improve this tool.
 For questions or feedback, contact: kevincolacogofynd.com
 
 Thank you for using this tool to improve your website quality! 🚀
-
-
-
