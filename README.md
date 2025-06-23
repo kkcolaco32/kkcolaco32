@@ -108,6 +108,6 @@ python3 run_tests.py
 Feel free to open issues or pull requests to improve this tool.
 
 📧 Contact
-For questions or feedback, contact: kevincolacogofynd.com
+For questions or feedback, contact: kkcolaco@gmail.com
 
 Thank you for using this tool to improve your website quality! 🚀
